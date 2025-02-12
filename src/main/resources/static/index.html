@@ -9,11 +9,11 @@
 <body>
     <div class="container mt-5">
         <h1 class="text-center">Agendamento de Clientes</h1>
-        
-        <!-- Etapa 1: Cadastro -->
+
+        <!-- Etapa 1: Cadastro do Cliente -->
         <div id="etapa1">
-            <h3>Cadastro</h3>
-            <form id="cadastroForm">
+            <h3>Cadastro do Cliente</h3>
+            <form id="clienteForm">
                 <div class="mb-3">
                     <label for="nome" class="form-label">Nome:</label>
                     <input type="text" id="nome" class="form-control" required>
@@ -29,8 +29,8 @@
                 <button type="button" class="btn btn-primary" onclick="proximaEtapa(2)">Próximo</button>
             </form>
         </div>
-        
-        <!-- Etapa 2: Escolha do Serviço -->
+
+        <!-- Etapa 2: Cadastro do Serviço -->
         <div id="etapa2" style="display: none;">
             <h3>Escolha o Serviço</h3>
             <form id="servicoForm">
@@ -46,7 +46,7 @@
                 <button type="button" class="btn btn-primary" onclick="proximaEtapa(3)">Próximo</button>
             </form>
         </div>
-        
+
         <!-- Etapa 3: Agendamento -->
         <div id="etapa3" style="display: none;">
             <h3>Escolha a Data e Horário</h3>
@@ -59,16 +59,14 @@
                 <button type="submit" class="btn btn-success">Confirmar Agendamento</button>
             </form>
         </div>
+
+        <!-- Mensagem de confirmação -->
+        <div id="confirmacao" class="alert alert-success text-center mt-3" style="display: none;">
+            Agendamento confirmado com sucesso!
+        </div>
     </div>
 
-    <script>
-        function proximaEtapa(etapa) {
-            document.getElementById('etapa1').style.display = (etapa === 1) ? 'block' : 'none';
-            document.getElementById('etapa2').style.display = (etapa === 2) ? 'block' : 'none';
-            document.getElementById('etapa3').style.display = (etapa === 3) ? 'block' : 'none';
-        }
-    </script>
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="scripts.js"></script>
 </body>
 </html>
