@@ -1,104 +1,153 @@
 document.addEventListener('DOMContentLoaded', function () {
-    const clienteForm = document.getElementById('cadastroForm');
-    const servicoForm = document.getElementById('servicoForm');
-    const agendamentoForm = document.getElementById('agendamentoForm');
-    const agendamentosList = document.getElementById('agendamentosList');
-
-    const mensagemConfirmacao = document.createElement('div');
-    mensagemConfirmacao.className = 'alert alert-success mt-3';
-    mensagemConfirmacao.style.display = 'none';
-    mensagemConfirmacao.textContent = 'Agendamento realizado com sucesso!';
-    agendamentoForm.parentNode.appendChild(mensagemConfirmacao);
-
-    function proximaEtapa(etapa) {
-        document.getElementById('etapa1').style.display = (etapa === 1) ? 'block' : 'none';
-        document.getElementById('etapa2').style.display = (etapa === 2) ? 'block' : 'none';
-        document.getElementById('etapa3').style.display = (etapa === 3) ? 'block' : 'none';
+    // Elementos comuns
+    const mensagemConfirmacao = document.getElementById('mensagemConfirmacao');
+    
+    // Função para navegação entre páginas
+    function navegarPara(pagina) {
+        window.location.href = pagina;
     }
 
-    function carregarAgendamentos() {
-        fetch('/api/agendamentos')
-            .then(response => response.json())
-            .then(data => {
-                agendamentosList.innerHTML = ''; 
-                data.forEach(agendamento => {
-                    const li = document.createElement('li');
-                    li.textContent = `Cliente: ${agendamento.cliente.nome}, Serviço: ${agendamento.servico.nome}, Data: ${new Date(agendamento.dataHora).toLocaleString()}`;
-                    agendamentosList.appendChild(li);
-                });
-            })
-            .catch(error => console.error('Erro ao carregar agendamentos:', error));
+    // Função para mostrar mensagem de confirmação
+    function mostrarConfirmacao() {
+        if(mensagemConfirmacao) {
+            mensagemConfirmacao.style.display = 'block';
+            setTimeout(() => {
+                if(mensagemConfirmacao) mensagemConfirmacao.style.display = 'none';
+            }, 3000);
+        }
     }
 
-    function salvarCliente(cliente) {
-        return fetch('/api/clientes', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(cliente)
-        }).then(response => response.json());
+    // Client.html - Cadastro do Cliente
+    if(window.location.pathname.includes('cliente.html')) {
+        const clienteForm = document.getElementById('cadastroForm');
+        
+        if(clienteForm) {
+            // Preencher com dados salvos
+            const savedData = JSON.parse(localStorage.getItem('agendamento') || '{}');
+            document.getElementById('nome').value = savedData.nome || '';
+            document.getElementById('telefone').value = savedData.telefone || '';
+            document.getElementById('email').value = savedData.email || '';
+
+            clienteForm.onsubmit = function(e) {
+                e.preventDefault();
+                const clienteData = {
+                    nome: document.getElementById('nome').value,
+                    telefone: document.getElementById('telefone').value,
+                    email: document.getElementById('email').value
+                };
+                localStorage.setItem('agendamento', JSON.stringify(clienteData));
+                navegarPara('servico.html');
+            };
+        }
     }
 
-    function salvarServico(servico) {
-        return fetch('/api/servicos', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(servico)
-        }).then(response => response.json());
+    // Servico.html - Escolha do Serviço
+    if(window.location.pathname.includes('servico.html')) {
+        const servicoForm = document.getElementById('servicoForm');
+        
+        if(servicoForm) {
+            // Preencher com dados salvos
+            const savedData = JSON.parse(localStorage.getItem('agendamento') || '{}');
+            document.getElementById('servico').value = savedData.servico || 'manicure';
+
+            servicoForm.onsubmit = function(e) {
+                e.preventDefault();
+                const servicoData = {
+                    ...JSON.parse(localStorage.getItem('agendamento')),
+                    servico: document.getElementById('servico').value
+                };
+                localStorage.setItem('agendamento', JSON.stringify(servicoData));
+                navegarPara('agendamento.html');
+            };
+        }
     }
 
-    agendamentoForm.addEventListener('submit', function (event) {
-        event.preventDefault();
+    // Agendamento.html - Finalização
+    if(window.location.pathname.includes('agendamento.html')) {
+        const agendamentoForm = document.getElementById('agendamentoForm');
+        const agendamentosList = document.getElementById('agendamentosList');
 
-        const cliente = {
-            nome: document.getElementById('nome').value,
-            telefone: document.getElementById('telefone').value,
-            email: document.getElementById('email').value
-        };
+        // Carregar dados salvos
+        const savedData = JSON.parse(localStorage.getItem('agendamento') || '{}');
+        document.getElementById('dataHora').value = savedData.dataHora || '';
 
-        const servico = {
-            nome: document.getElementById('servico').value
-        };
+        // Carregar agendamentos
+        function carregarAgendamentos() {
+            fetch('/api/agendamentos')
+                .then(response => response.json())
+                .then(data => {
+                    if(agendamentosList) {
+                        agendamentosList.innerHTML = '';
+                        data.forEach(agendamento => {
+                            const li = document.createElement('li');
+                            li.textContent = `Cliente: ${agendamento.cliente.nome}, Serviço: ${agendamento.servico.nome}, Data: ${new Date(agendamento.dataHora).toLocaleString()}`;
+                            agendamentosList.appendChild(li);
+                        });
+                    }
+                })
+                .catch(error => console.error('Erro ao carregar agendamentos:', error));
+        }
 
-        const dataHora = document.getElementById('dataHora').value;
-
-        salvarCliente(cliente).then(clienteSalvo => {
-            return salvarServico(servico).then(servicoSalvo => {
-                const agendamento = {
-                    clienteId: clienteSalvo.id, // Envia apenas o ID do cliente salvo
-                    servicoId: servicoSalvo.id, // Envia apenas o ID do serviço salvo
-                    dataHora: dataHora
+        if(agendamentoForm) {
+            agendamentoForm.onsubmit = function(e) {
+                e.preventDefault();
+                
+                const agendamentoData = {
+                    ...JSON.parse(localStorage.getItem('agendamento')),
+                    dataHora: document.getElementById('dataHora').value
                 };
 
-                return fetch('/api/agendamentos', {
+                // Salvar cliente
+                fetch('/api/clientes', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(agendamento)
-                });
-            });
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Agendamento criado:', data);
+                    body: JSON.stringify({
+                        nome: agendamentoData.nome,
+                        telefone: agendamentoData.telefone,
+                        email: agendamentoData.email
+                    })
+                })
+                .then(response => response.json())
+                .then(cliente => {
+                    // Salvar serviço
+                    return fetch('/api/servicos', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            nome: agendamentoData.servico
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(servico => {
+                        // Salvar agendamento
+                        return fetch('/api/agendamentos', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                clienteId: cliente.id,
+                                servicoId: servico.id,
+                                dataHora: agendamentoData.dataHora
+                            })
+                        });
+                    });
+                })
+                .then(response => response.json())
+                .then(() => {
+                    localStorage.removeItem('agendamento');
+                    carregarAgendamentos();
+                    mostrarConfirmacao();
+                    setTimeout(() => navegarPara('confirmacao.html'), 3000);
+                })
+                .catch(error => console.error('Erro:', error));
+            };
+
             carregarAgendamentos();
-            clienteForm.reset();
-            servicoForm.reset();
-            agendamentoForm.reset();
-
-            mensagemConfirmacao.style.display = 'block';
-            setTimeout(() => {
-                mensagemConfirmacao.style.display = 'none';
-                proximaEtapa(1);
-            }, 3000);
-        })
-        .catch(error => console.error('Erro ao criar agendamento:', error));
-    });
-
-    carregarAgendamentos();
-    window.proximaEtapa = proximaEtapa;
+        }
+    }
 });

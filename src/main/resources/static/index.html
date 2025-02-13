@@ -8,65 +8,11 @@
 </head>
 <body>
     <div class="container mt-5">
-        <h1 class="text-center">Agendamento de Clientes</h1>
-
-        <!-- Etapa 1: Cadastro do Cliente -->
-        <div id="etapa1">
-            <h3>Cadastro do Cliente</h3>
-            <form id="clienteForm">
-                <div class="mb-3">
-                    <label for="nome" class="form-label">Nome:</label>
-                    <input type="text" id="nome" class="form-control" required>
-                </div>
-                <div class="mb-3">
-                    <label for="telefone" class="form-label">Telefone:</label>
-                    <input type="tel" id="telefone" class="form-control" required>
-                </div>
-                <div class="mb-3">
-                    <label for="email" class="form-label">E-mail:</label>
-                    <input type="email" id="email" class="form-control" required>
-                </div>
-                <button type="button" class="btn btn-primary" onclick="proximaEtapa(2)">Próximo</button>
-            </form>
-        </div>
-
-        <!-- Etapa 2: Cadastro do Serviço -->
-        <div id="etapa2" style="display: none;">
-            <h3>Escolha o Serviço</h3>
-            <form id="servicoForm">
-                <div class="mb-3">
-                    <label for="servico" class="form-label">Serviço:</label>
-                    <select id="servico" class="form-select" required>
-                        <option value="manicure">Manicure - Pé e Mão - R$50</option>
-                        <option value="corte">Corte de Cabelo - R$30</option>
-                        <option value="hidratação">Hidratação - R$40</option>
-                    </select>
-                </div>
-                <button type="button" class="btn btn-secondary" onclick="proximaEtapa(1)">Voltar</button>
-                <button type="button" class="btn btn-primary" onclick="proximaEtapa(3)">Próximo</button>
-            </form>
-        </div>
-
-        <!-- Etapa 3: Agendamento -->
-        <div id="etapa3" style="display: none;">
-            <h3>Escolha a Data e Horário</h3>
-            <form id="agendamentoForm">
-                <div class="mb-3">
-                    <label for="dataHora" class="form-label">Data e Hora:</label>
-                    <input type="datetime-local" id="dataHora" class="form-control" required>
-                </div>
-                <button type="button" class="btn btn-secondary" onclick="proximaEtapa(2)">Voltar</button>
-                <button type="submit" class="btn btn-success">Confirmar Agendamento</button>
-            </form>
-        </div>
-
-        <!-- Mensagem de confirmação -->
-        <div id="confirmacao" class="alert alert-success text-center mt-3" style="display: none;">
-            Agendamento confirmado com sucesso!
+        <h1 class="text-center">Bem-vindo ao Salão de Beleza</h1>
+        <div class="d-grid gap-2 mt-4">
+            <a href="cliente.html" class="btn btn-primary btn-lg">Novo Agendamento</a>
         </div>
     </div>
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="scripts.js"></script>
 </body>
 </html>
